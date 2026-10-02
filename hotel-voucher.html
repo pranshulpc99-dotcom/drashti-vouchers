@@ -145,6 +145,41 @@
     }
   }
 
+  .date-input{
+    width:100%;
+    min-width:0;
+    border:0;
+    background:transparent;
+    color:#1f2933;
+    font:inherit;
+    padding:2px 0;
+  }
+  .date-input:focus{outline:2px solid var(--gold); border-radius:3px;}
+  @media print{
+    .date-input{appearance:none; -webkit-appearance:none;}
+  }
+  .room-stepper{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;}
+  .room-stepper-button{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;flex:0 0 28px;border:1px solid #dce3eb;border-radius:50%;background:#fff;color:var(--navy);font:600 17px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;padding:0;transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease;}
+  .room-stepper-button:hover{background:var(--navy);border-color:var(--navy);color:#fff;transform:translateY(-1px);}
+  .room-stepper-button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  #roomCount,.counter-value{display:flex;align-items:center;justify-content:center;min-width:34px;height:30px;padding:0 6px;border:1px solid var(--line);border-radius:5px;background:#f8f9fb;text-align:center;font-size:14px;font-weight:700;color:var(--navy);}
+  @media print{.room-stepper-button{display:none;}.room-stepper{min-width:0;}#roomCount,.counter-value{border:0;background:transparent;width:auto;height:auto;padding:0;}}
+  table.stay-summary{table-layout:fixed;width:100%;}
+  table.stay-summary th,table.stay-summary td{padding:8px 6px;overflow-wrap:anywhere;}
+  table.stay-summary th:nth-child(1),table.stay-summary td:nth-child(1),
+  table.stay-summary th:nth-child(2),table.stay-summary td:nth-child(2){width:15.5%;}
+  table.stay-summary th:nth-child(3),table.stay-summary td:nth-child(3){width:9%;}
+  table.stay-summary th:nth-child(4),table.stay-summary td:nth-child(4),
+  table.stay-summary th:nth-child(5),table.stay-summary td:nth-child(5){width:13%;}
+  table.stay-summary th:nth-child(6),table.stay-summary td:nth-child(6){width:12%;}
+  table.stay-summary th:nth-child(7),table.stay-summary td:nth-child(7){width:12%;}
+  table.stay-summary th:nth-child(8),table.stay-summary td:nth-child(8){width:10%;}
+  table.stay-summary .date-input{display:block;width:100%;font-size:12px;}
+  table.stay-summary .room-stepper{gap:3px;}
+  table.stay-summary .room-stepper-button{width:22px;height:22px;flex-basis:22px;font-size:14px;}
+  table.stay-summary #roomCount,table.stay-summary .counter-value{min-width:25px;height:24px;padding:0 3px;font-size:12px;}
+  table.stay-summary td:nth-child(3){font-size:12px;}
+  table.stay-summary td:nth-child(8)[contenteditable="true"]{font-size:12px;}
   table.stay-table{
     width:100%;
     border-collapse:collapse;
@@ -154,7 +189,7 @@
   table.stay-table th{
     background:#f0f2f5;
     color:var(--navy);
-    text-align:left;
+    text-align:center;
     padding:9px 10px;
     font-size:10.5px;
     text-transform:uppercase;
@@ -300,12 +335,14 @@
 
     <!-- Stay Details -->
     <div class="section-title">Stay Details</div>
-    <table class="stay-table">
+    <table class="stay-table stay-summary">
       <thead>
         <tr>
           <th>Check-In</th>
           <th>Check-Out</th>
           <th>No. of Nights</th>
+          <th>No. of Guests</th>
+          <th>No. of Adults</th>
           <th>Room Type</th>
           <th>Room(s)</th>
           <th>Meal Plan</th>
@@ -313,11 +350,13 @@
       </thead>
       <tbody>
         <tr>
-          <td contenteditable="true">DD/MM/YYYY</td>
-          <td contenteditable="true">DD/MM/YYYY</td>
-          <td contenteditable="true">0</td>
+          <td><input class="date-input" id="checkIn" type="date" aria-label="Check-in date"></td>
+          <td><input class="date-input" id="checkOut" type="date" aria-label="Check-out date"></td>
+          <td><span id="nights">0 Nights</span></td>
+          <td><div class="room-stepper"><button type="button" class="room-stepper-button" aria-label="Remove one guest" onclick="changeCounter('guestCount', -1)">−</button><span class="counter-value" id="guestCount" aria-live="polite">0</span><button type="button" class="room-stepper-button" aria-label="Add one guest" onclick="changeCounter('guestCount', 1)">+</button></div></td>
+          <td><div class="room-stepper"><button type="button" class="room-stepper-button" aria-label="Remove one adult" onclick="changeCounter('adultCount', -1)">−</button><span class="counter-value" id="adultCount" aria-live="polite">0</span><button type="button" class="room-stepper-button" aria-label="Add one adult" onclick="changeCounter('adultCount', 1)">+</button></div></td>
           <td contenteditable="true">Deluxe / Standard</td>
-          <td contenteditable="true">1</td>
+          <td><div class="room-stepper"><button type="button" class="room-stepper-button" aria-label="Remove one room" onclick="changeRooms(-1)">−</button><span id="roomCount" aria-live="polite">1</span><button type="button" class="room-stepper-button" aria-label="Add one room" onclick="changeRooms(1)">+</button></div></td>
           <td contenteditable="true">CP / MAP / AP</td>
         </tr>
       </tbody>
@@ -325,7 +364,7 @@
 
     <!-- Occupancy / Extra Bed Details -->
     <div class="section-title">Occupancy / Extra Bed Details</div>
-    <table class="stay-table">
+    <table class="stay-table stay-summary">
       <thead>
         <tr>
           <th>Occupancy Type</th>
@@ -336,17 +375,17 @@
       <tbody>
         <tr>
           <td>Adult with Extra Bed</td>
-          <td contenteditable="true">0</td>
+          <td><div class="room-stepper"><button type="button" class="room-stepper-button" aria-label="Remove one adult with extra bed guest" onclick="changeCounter('adultExtraPax', -1)">−</button><span class="counter-value" id="adultExtraPax" aria-live="polite">0</span><button type="button" class="room-stepper-button" aria-label="Add one adult with extra bed guest" onclick="changeCounter('adultExtraPax', 1)">+</button></div></td>
           <td contenteditable="true">-</td>
         </tr>
         <tr>
           <td>Child with Extra Bed</td>
-          <td contenteditable="true">0</td>
+          <td><div class="room-stepper"><button type="button" class="room-stepper-button" aria-label="Remove one child with extra bed guest" onclick="changeCounter('childExtraPax', -1)">−</button><span class="counter-value" id="childExtraPax" aria-live="polite">0</span><button type="button" class="room-stepper-button" aria-label="Add one child with extra bed guest" onclick="changeCounter('childExtraPax', 1)">+</button></div></td>
           <td contenteditable="true">-</td>
         </tr>
         <tr>
           <td>Child without Bed</td>
-          <td contenteditable="true">0</td>
+          <td><div class="room-stepper"><button type="button" class="room-stepper-button" aria-label="Remove one child without bed guest" onclick="changeCounter('childNoBedPax', -1)">−</button><span class="counter-value" id="childNoBedPax" aria-live="polite">0</span><button type="button" class="room-stepper-button" aria-label="Add one child without bed guest" onclick="changeCounter('childNoBedPax', 1)">+</button></div></td>
           <td contenteditable="true">-</td>
         </tr>
       </tbody>
@@ -389,5 +428,37 @@
 
 </div>
 
+<script>
+  const checkInInput = document.getElementById('checkIn');
+  const checkOutInput = document.getElementById('checkOut');
+  const nightsOutput = document.getElementById('nights');
+
+  function updateNights() {
+    if (!checkInInput.value || !checkOutInput.value) {
+      nightsOutput.textContent = '0 Nights';
+      return;
+    }
+    const [inYear, inMonth, inDay] = checkInInput.value.split('-').map(Number);
+    const [outYear, outMonth, outDay] = checkOutInput.value.split('-').map(Number);
+    const checkIn = Date.UTC(inYear, inMonth - 1, inDay);
+    const checkOut = Date.UTC(outYear, outMonth - 1, outDay);
+    const nights = Math.round((checkOut - checkIn) / 86400000);
+    nightsOutput.textContent = nights > 0 ? `${nights} ${nights === 1 ? 'Night' : 'Nights'}` : '0 Nights';
+  }
+
+  checkInInput.addEventListener('change', updateNights);
+  checkOutInput.addEventListener('change', updateNights);
+
+  const roomCountOutput = document.getElementById('roomCount');
+  function changeRooms(amount) {
+    const current = Number(roomCountOutput.textContent) || 1;
+    roomCountOutput.textContent = String(Math.min(99, Math.max(1, current + amount)));
+  }
+  function changeCounter(id, amount) {
+    const output = document.getElementById(id);
+    const current = Number(output.textContent) || 0;
+    output.textContent = String(Math.min(99, Math.max(0, current + amount)));
+  }
+</script>
 </body>
 </html>
